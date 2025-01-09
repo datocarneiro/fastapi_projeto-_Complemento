@@ -1,0 +1,78 @@
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.env
+*.env.*
+
+# Virtual Environment
+venv/
+.env/
+
+# Logs
+*.log
+logs/
+*.out
+*.err
+
+# Cache
+*.swp
+*.swo
+.cache/
+.pytest_cache/
+.dockerignore
+
+# IDEs/Editors
+.vscode/
+.idea/
+*.iml
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Dependency files
+pip-wheel-metadata/
+*.egg-info/
+.eggs/
+
+# Database
+*.sqlite3
+db.sqlite3
+
+# Docker-related files
+.dockerignore
+docker-compose.override.yml
+
+# Alembic
+alembic.ini
+migrations/
+
+# Coverage reports
+htmlcov/
+*.cover
+.coverage
+*.cov
+nosetests.xml
+coverage.xml
+*.lcov
+
+# Test reports
+*.pytest_cache
+tests/__pycache__/
+tests/*/__pycache__/
+
+# Build
+build/
+dist/
+*.egg
+
+# Documentation
+*.rst
+*.md~
+alteracoes.ipynb
+alteracoes
+plano.ipynb
+plano
+Desafio Técnico_ API de Gerenciamento de Tarefas.pdf
