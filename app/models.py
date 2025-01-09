@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime, func
 from sqlalchemy.orm import declarative_base
 from pydantic import BaseModel
 from typing import Optional
+from datetime import datetime
 
 # Declarative Base para os modelos SQLAlchemy
 Base = declarative_base()
@@ -24,7 +25,7 @@ class CriarTarefa(BaseModel):
     status: Optional[str] = "pendente"
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class AtualizarTarefa(BaseModel):
     titulo: Optional[str]
@@ -32,4 +33,15 @@ class AtualizarTarefa(BaseModel):
     status: Optional[str]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
+class TarefaSchema(BaseModel):
+    id: int
+    titulo: str
+    descricao: Optional[str]
+    status: str
+    data_criacao: datetime
+    data_atualizacao: datetime
+
+    class Config:
+        from_attributes = True
