@@ -38,6 +38,12 @@ Instale todas as dependências do projeto presentes no arquivo `requirements.txt
 $ pip install -r requirements.txt
 ```
 
+### 5. Configurar o Banco de Dados
+Certifique-se de que o banco de dados está configurado corretamente. Execute as migrações necessárias:
+```bash
+$ alembic upgrade head
+```
+
 ---
 
 ## Variáveis de Ambiente
@@ -56,6 +62,12 @@ USERNAME=Insiras a informação correta
 FULL_NAME=Insiras a informação correta
 EMAIL=Insiras a informação correta
 PASSWORD=Insiras a informação correta
+
+DB_USER=Insiras a informação correta
+DB_PASSWORD=Insiras a informação correta
+DB_HOST=Insiras a informação correta
+DB_NAME=Insiras a informação correta
+DB_PORT=Insiras a informação correta
 ```
 Substitua os valores com as configurações adequadas ao seu ambiente.
 
@@ -88,25 +100,22 @@ Certifique-se de que o ambiente virtual esteja ativo.
 
 ---
 
-
 ## Estrutura do Projeto
 
 ```plaintext
 .
+├── alembic
+│   ├── versions
+│       ├── <hash>_create_tarefas_table.py
+│   ├── env.py 
+│   ├── README.md
 ├── app
-│   ├── __init__.py
 │   ├── auth.py
-│   ├── database.py   # Novo arquivo para gerenciar a conexão com o SQLite
+│   ├── database.py 
 │   ├── db.py
 │   ├── main.py
 │   ├── models.py
 │   ├── routes.py
-├── migrations        # Diretório gerado pelo Alembic
-│   ├── env.py
-│   ├── README
-│   ├── script.py.mako
-│   ├── versions
-│       ├── <hash>_create_tarefas_table.py  # Migração inicial gerada pelo Alembic
 ├── tests
 │   ├── __init__.py
 │   ├── conftest.py
@@ -116,7 +125,7 @@ Certifique-se de que o ambiente virtual esteja ativo.
 ├── .env
 ├── pytest.ini
 ├── README.md
-├── alembic.ini       # Arquivo de configuração do Alembic
+├── alembic.ini       
 ```
 
 ### Descrição dos Arquivos
@@ -144,6 +153,21 @@ Certifique-se de que o ambiente virtual esteja ativo.
 #### Autenticação
 - **POST `/auth`**: Obter token de autenticação.
 
+---
+
+## Exemplos de Uso
+
+### Criar uma Tarefa
+```bash
+curl -X POST "http://127.0.0.1:8000/tarefas/" -H "accept: application/json" -H "Content-Type: application/json" -d '{"titulo": "Nova Tarefa", "descricao": "Descrição da tarefa"}'
+```
+
+### Listar Tarefas
+```bash
+curl -X GET "http://127.0.0.1:8000/tarefas/" -H "accept: application/json"
+```
+
+---
 
 ## Contribuição
 Sinta-se à vontade para contribuir com melhorias para este projeto. Por favor, crie um pull request ou abra uma issue no repositório.
@@ -157,9 +181,7 @@ Você pode usar, modificar e distribuir o código, desde que mantenha o aviso de
 
 Este projeto utiliza bibliotecas de terceiros. Consulte o arquivo `LICENSE-THIRD-PARTY` para mais detalhes.
 
+---
 
 ## Autor
 - [Dato®]
-
-
-

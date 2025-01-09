@@ -21,7 +21,6 @@ logs/
 *.swo
 .cache/
 .pytest_cache/
-.dockerignore
 
 # IDEs/Editors
 .vscode/
@@ -40,6 +39,9 @@ pip-wheel-metadata/
 # Database
 *.sqlite3
 db.sqlite3
+
+# MySQL
+*.sql
 
 # Docker-related files
 .dockerignore
