@@ -1,51 +1,51 @@
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from sqlalchemy import Column, Integer, String, DateTime, func
+from sqlalchemy.orm import declarative_base
+from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
-import pytz
+from typing import List
 
-# Fuso horário de Brasília
-fuso_horario_brasilia = pytz.timezone('America/Sao_Paulo')
+# Declarative Base para os modelos SQLAlchemy
+Base = declarative_base()
 
-# Modelo base para a tarefa
-class TarefaBase(BaseModel):
-    titulo: str  # Campo obrigatório
-    descricao: Optional[str] = None  # Campo opcional
-    status: str  # Campo obrigatório
-    data_criacao: datetime = Field(default_factory=lambda: datetime.now(fuso_horario_brasilia))  # Data de criação gerada automaticamente com timezone
-    data_atualizacao: datetime = Field(default_factory=lambda: datetime.now(fuso_horario_brasilia))  # Data de atualização gerada automaticamente com timezone
-    
-    # Validação para o campo 'status'
-    @field_validator('status')
-    def validar_status(cls, status):
-        status_validos = ["pendente", "em andamento", "concluída"]
-        if status not in status_validos:
-            raise ValueError(f"status '{status}' não é válido. Os status válidos são: {status_validos}.")
-        return status
-    
-    model_config = ConfigDict(from_attributes=True)
+class Tarefa(Base):
+    __tablename__ = "tarefas"
 
-# Modelo para criação de tarefa (sem o id, pois o id será autoincrementado)
-class TarefaCreate(TarefaBase):
-    pass
+    id = Column(Integer, primary_key=True, autoincrement=True, index=True)
+    titulo = Column(String(255), nullable=False, index=True)
+    descricao = Column(String(500), nullable=True)
+    status = Column(String(50), nullable=False, default="pendente", index=True)
+    data_criacao = Column(DateTime, server_default=func.now())
+    data_atualizacao = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
-# Modelo para representar a tarefa completa (inclui o id autoincrementado)
-class Tarefa(TarefaBase):
-    id: int 
+# Modelos Pydantic para validação e serialização
+class CriarTarefa(BaseModel):
+    titulo: str
+    descricao: Optional[str]
+    status: Optional[str] = "pendente"
 
-# Modelo para atualizar apenas os campo que quiser
-class TarefaUpdate(BaseModel):
-    status: str  # Campo obrigatório
+    class Config:
+        from_attributes = True
 
-    # titulo: str                               # habilitar se quiser alterar tambem
-    # descricao: Optional[str]                  # habilitar se quiser alterar tambem
-  
-    # Validação para o campo 'status'
-    @field_validator('status')
-    def validar_status(cls, status):
-        status_validos = ["pendente", "em andamento", "concluída"]
-        if status not in status_validos:
-            raise ValueError(f"status '{status}' não é válido. Os status válidos são: {status_validos}.")
-        return status
+class AtualizarTarefa(BaseModel):
+    status: Optional[str]
+    # titulo: Optional[str]
+    # descricao: Optional[str]
 
+    class Config:
+        from_attributes = True
 
+class TarefaSchema(BaseModel):
+    id: int
+    titulo: str
+    descricao: Optional[str]
+    status: str
+    data_criacao: datetime
+    data_atualizacao: datetime
 
+    class Config:
+        from_attributes = True
+
+class TarefaListResponse(BaseModel):
+    message: str = "Lista de tarefas"
+    data: List[TarefaSchema] = []

@@ -94,11 +94,19 @@ Certifique-se de que o ambiente virtual esteja ativo.
 ```plaintext
 .
 ├── app
+│   ├── __init__.py
 │   ├── auth.py
+│   ├── database.py   # Novo arquivo para gerenciar a conexão com o SQLite
 │   ├── db.py
 │   ├── main.py
 │   ├── models.py
 │   ├── routes.py
+├── migrations        # Diretório gerado pelo Alembic
+│   ├── env.py
+│   ├── README
+│   ├── script.py.mako
+│   ├── versions
+│       ├── <hash>_create_tarefas_table.py  # Migração inicial gerada pelo Alembic
 ├── tests
 │   ├── __init__.py
 │   ├── conftest.py
@@ -108,6 +116,7 @@ Certifique-se de que o ambiente virtual esteja ativo.
 ├── .env
 ├── pytest.ini
 ├── README.md
+├── alembic.ini       # Arquivo de configuração do Alembic
 ```
 
 ### Descrição dos Arquivos
