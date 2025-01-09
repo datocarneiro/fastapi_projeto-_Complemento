@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime, func
 from sqlalchemy.orm import declarative_base
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from datetime import datetime
 from typing import List
@@ -24,16 +24,14 @@ class CriarTarefa(BaseModel):
     descricao: Optional[str]
     status: Optional[str] = "pendente"
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class AtualizarTarefa(BaseModel):
     status: Optional[str]
     # titulo: Optional[str]
     # descricao: Optional[str]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class TarefaSchema(BaseModel):
     id: int
@@ -43,8 +41,7 @@ class TarefaSchema(BaseModel):
     data_criacao: datetime
     data_atualizacao: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class TarefaListResponse(BaseModel):
     message: str = "Lista de tarefas"

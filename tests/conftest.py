@@ -1,19 +1,28 @@
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy.orm import sessionmaker
 from app.main import app
+from app.database import Base, engine
+from dotenv import load_dotenv
+import os
 
-# Criar o cliente de teste
-@pytest.fixture
-def client():
+# Carregar variáveis de ambiente do arquivo .env
+load_dotenv()
+
+# Criar uma sessão de teste
+TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+@pytest.fixture(scope="module")
+def test_client():
+    Base.metadata.create_all(bind=engine)  # Criar tabelas para teste
     client = TestClient(app)
+    yield client
+    Base.metadata.drop_all(bind=engine)  # Dropar tabelas após os testes
 
-    # Realizar login para obter o token
-    login_data = {"username": "admin", "password": "admin123"}
-    response = client.post("/auth", json=login_data)
-    assert response.status_code == 200
-
-    # Extrair o token
-    token = response.json()["access_token"]
-    client.headers.update({"Authorization": f"Bearer {token}"})
-
-    return client
+@pytest.fixture(scope="module")
+def db_session():
+    db = TestingSessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
