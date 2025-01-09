@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, create_engine
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import database_exists, create_database
@@ -18,13 +18,11 @@ DB_PORT = os.getenv("DB_PORT")
 # Construir a URL do banco de dados
 DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
-print(DATABASE_URL)
-
 # Criação do engine para o MySQL
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 
-# Verificar se o banco de dados existe e criá-lo se não existir 
-if not database_exists(engine.url): 
+# Verificar se o banco de dados existe e criá-lo se não existir
+if not database_exists(engine.url):
     create_database(engine.url)
 
 # Configuração da sessão
@@ -36,10 +34,13 @@ Base = declarative_base()
 # Definição dos modelos
 class Tarefa(Base):
     __tablename__ = "tarefas"
+    id = Column(Integer, primary_key=True, autoincrement=True, index=True)
+    titulo = Column(String(255), nullable=False, index=True)
+    descricao = Column(String(500), nullable=True)
+    status = Column(String(50), nullable=False, default="pendente", index=True)
+    data_criacao = Column(DateTime, server_default=func.now())
+    data_atualizacao = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
-    id = Column(Integer, primary_key=True, index=True)
-    descricao = Column(String(255), index=True)
-    concluida = Column(Integer, default=0)
 
 # Criar todas as tabelas no banco de dados
 Base.metadata.create_all(bind=engine)
