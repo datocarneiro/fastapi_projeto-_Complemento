@@ -25,3 +25,4 @@ services:
 
 volumes:
   mysql_data:  # Volume persistente para os dados do banco
+
