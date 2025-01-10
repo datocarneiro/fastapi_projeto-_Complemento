@@ -8,8 +8,10 @@ Esta é uma API para gerenciamento de tarefas, desenvolvida em Python utilizando
 ## Configuração do Ambiente Local
 
 ### 1. Requisitos
-- Python 3.10+
+- Python 3.12.1
 - Git
+- Docker
+- Docker Compose
 
 ### 2. Clonar o Repositório
 ```bash
@@ -46,57 +48,109 @@ $ alembic upgrade head
 
 ---
 
+## Dockerização da API
+
+### Executar o Projeto com Docker Compose
+
+Certifique-se de que o Docker esteja instalado e configurado corretamente. Para construir a imagem e iniciar os containers configurados no `docker-compose.yml`, execute:
+
+```bash
+$ docker-compose up --build
+```
+
+Isso irá iniciar os containers da API e do banco de dados automaticamente.
+
+
+### 3. Parar os Containers
+Para parar os containers, utilize:
+```bash
+$ docker-compose down
+```
+
+---
+
+## Migrações do Banco de Dados
+
+As migrações são gerenciadas pelo Alembic. Abaixo estão os principais comandos para lidar com migrações:
+
+### 1. Criar uma Nova Migração
+Ao alterar os modelos, crie uma nova migração:
+```bash
+$ alembic revision --autogenerate -m "Descrição da migração"
+```
+
+### 2. Aplicar Migrações
+Para aplicar as migrações ao banco de dados:
+```bash
+$ alembic upgrade head
+```
+
+### 3. Reverter Migrações
+Para reverter a última migração:
+```bash
+$ alembic downgrade -1
+```
+
+### 4. Configurar Alembic
+O arquivo `alembic.ini` contém as configurações principais. Certifique-se de que o caminho do banco de dados está correto no campo `sqlalchemy.url`.
+
+---
+
 ## Variáveis de Ambiente
 Crie um arquivo `.env` na raiz do projeto com as seguintes configurações:
 ```env
 SECRET_KEY=<sua_secret_key>
 ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=ajustar conforme a necessidade
+ACCESS_TOKEN_EXPIRE_MINUTES=<valor>
 
-ADMIN_USERNAME= Insiras a informação correta
-ADMIN_FULL_NAME= Insiras a informação correta
-ADMIN_EMAIL= Insiras a informação correta
-ADMIN_PASSWORD= Insiras a informação correta
+ADMIN_USERNAME=<valor>
+ADMIN_FULL_NAME=<valor>
+ADMIN_EMAIL=<valor>
+ADMIN_PASSWORD=<valor>
 
-USERNAME=Insiras a informação correta
-FULL_NAME=Insiras a informação correta
-EMAIL=Insiras a informação correta
-PASSWORD=Insiras a informação correta
+USERNAME=<valor>
+FULL_NAME=<valor>
+EMAIL=<valor>
+PASSWORD=<valor>
 
-DB_USER=Insiras a informação correta
-DB_PASSWORD=Insiras a informação correta
-DB_HOST=Insiras a informação correta
-DB_NAME=Insiras a informação correta
-DB_PORT=Insiras a informação correta
+DB_USER=<valor>
+DB_PASSWORD=<valor>
+DB_HOST=<valor>
+DB_NAME=<valor>
+DB_PORT=<valor>
 ```
-Substitua os valores com as configurações adequadas ao seu ambiente.
+<h4 style="color:#ff6900">Substitua os valores com as configurações adequadas ao seu ambiente.</h4>
+
 
 ---
 
 ## Executar a API
-Siga os passos abaixo para iniciar o servidor da API:
 
-### 1. Iniciar o Servidor
+### 1. Iniciar o Servidor Local
 Execute o seguinte comando no terminal:
 ```bash
 $ uvicorn app.main:app --reload
 ```
 
 ### 2. Acessar a Documentação
-Acesse a documentação interativa da API no navegador:
-- **Swagger UI**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-- **Redoc**: [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
+<h3 style="color:#ff6900">Acesse a documentação interativa da API no navegador:</h3>
+
+- **Swagger UI**: [http://localhost:8000/docs](http://127.0.0.1:8000/docs)
+
+
+- **Redoc**: [http://localhost:8000/redoc](http://127.0.0.1:8000/redoc)
+
 
 ---
 
 ## Testar a API
 
 ### 1. Executar Testes Automatizados
-Os testes automatizados, pode executá-los com o seguinte comando:
+Os testes automatizados podem ser executados com o seguinte comando:
 ```bash
 $ pytest
 ```
-Certifique-se de que o ambiente virtual esteja ativo.
+
 
 ---
 
@@ -107,11 +161,11 @@ Certifique-se de que o ambiente virtual esteja ativo.
 ├── alembic
 │   ├── versions
 │       ├── <hash>_create_tarefas_table.py
-│   ├── env.py 
+│   ├── env.py
 │   ├── README.md
 ├── app
 │   ├── auth.py
-│   ├── database.py 
+│   ├── database.py
 │   ├── db.py
 │   ├── main.py
 │   ├── models.py
@@ -123,9 +177,13 @@ Certifique-se de que o ambiente virtual esteja ativo.
 │   ├── test_routes.py
 ├── requirements.txt
 ├── .env
+├── Dockerfile
+├── docker-compose.yml
+├── .dockerignore
 ├── pytest.ini
 ├── README.md
 ├── alembic.ini       
+├── wait-for-it.sh      
 ```
 
 ### Descrição dos Arquivos
@@ -185,3 +243,4 @@ Este projeto utiliza bibliotecas de terceiros. Consulte o arquivo `LICENSE-THIRD
 
 ## Autor
 - [Dato®]
+
