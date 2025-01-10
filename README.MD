@@ -67,6 +67,7 @@ Para parar os containers, utilize:
 $ docker-compose down
 ```
 
+
 ---
 
 ## Migrações do Banco de Dados
