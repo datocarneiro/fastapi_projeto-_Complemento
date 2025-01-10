@@ -1,28 +1,27 @@
+version: '3.1'
+
 services:
   web:
     build: .
     container_name: api_tarefas
     ports:
-      - "8080:8000" # Expondo a aplicação na porta 8080
+      - "9000:9000"  # Porta exposta para o contêiner
     env_file:
       - .env
     depends_on:
       - db
-    restart: always
+    entrypoint: ["sh", "-c", "sleep 20 && uvicorn app.main:app --host 0.0.0.0 --port 9000"]
 
   db:
     image: mysql:8.0
     container_name: mysql_db
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD} # Defina uma senha para o root
-      MYSQL_DATABASE: ${DB_NAME}         # Nome do banco de dados
-      MYSQL_USER: ${DB_USER}          # Nome do usuário normal
-      MYSQL_PASSWORD: ${DB_PASSWORD}   # Senha do usuário
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}  # Senha do usuário root
+      MYSQL_DATABASE: ${DB_NAME}
     ports:
-      - "3307:3306" # Porta externa 3307 mapeada para a interna 3306
+      - "3307:3306"  # Exposição da porta 3306 do MySQL no host como 3307
     volumes:
-      - mysql_data:/var/lib/mysql
-    restart: always
+      - mysql_data:/var/lib/mysql  # Persistência dos dados do MySQL
 
 volumes:
-  mysql_data:
+  mysql_data:  # Volume persistente para os dados do banco
