@@ -9,7 +9,7 @@ from alembic import context
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Importar a Base e os modelos
-from app.database import Base
+from app.conn_database import Base
 from app.models import Tarefa
 
 # Esta linha carrega a configuração do arquivo de configuração.

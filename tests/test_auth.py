@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
-from app.database import Base, engine, SessionLocal
+from app.conn_database import Base, engine, SessionLocal
 from sqlalchemy.orm import sessionmaker
 from app.auth import create_access_token
 from dotenv import load_dotenv

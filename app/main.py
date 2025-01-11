@@ -18,7 +18,7 @@ app.include_router(tarefa_router)   # tarefa_router é o alias da instancia rout
 
 @app.get("/")
 def home():
-    return {"message": "API de gerenciamento de tarefas gvdfogjpoidfsug9uad8-yvku8d-yu09-ukrdt9vyui9yil=si- PIXAFLOW"}
+    return {"message": "API de gerenciamento de tarefas - DATO®"}
 
 
 
