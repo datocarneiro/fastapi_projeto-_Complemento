@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, func
+from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import declarative_base
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
@@ -54,3 +54,9 @@ class TarefaSchema(BaseModel):
 class TarefaListResponse(BaseModel):
     message: str = "Lista de tarefas"
     data: List[TarefaSchema] = []
+
+
+
+
+
+
