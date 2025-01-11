@@ -21,5 +21,4 @@ def read_root():
     return {"message": "API de gerenciamento de tarefas - PIXAFLOW"}
 
 
-# uvicorn app.main:app --reload  
 
