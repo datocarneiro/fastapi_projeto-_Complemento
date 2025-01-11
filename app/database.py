@@ -7,22 +7,27 @@ from dotenv import load_dotenv
 # Carregar variáveis de ambiente do arquivo .env
 load_dotenv()
 
-DATABASE_URL = f"mysql+pymysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
+credenciais = {
+    'USUARIO': os.getenv('DB_USER'),
+    'SENHA': os.getenv('DB_PASSWORD'),
+    'HOST': os.getenv('DB_HOST'),
+    'PORT': os.getenv('DB_PORT'),
+    'BANCO': os.getenv('DB_NAME'),
+}
 
-print(DATABASE_URL)
 
-engine = create_engine(DATABASE_URL)
+DATABASE_URL = f"mysql+pymysql://{credenciais.get('USUARIO')}:{credenciais.get('SENHA')}@{credenciais.get('HOST')}:{credenciais.get('PORT')}/{credenciais.get('BANCO')}"
+
+engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-
-
-
 # Criação do engine para o MySQL
-engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 
 # Verificar se o banco de dados existe e criá-lo se não existir
 if not database_exists(engine.url):
     create_database(engine.url)
+
 
 # Configuração da sessão
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

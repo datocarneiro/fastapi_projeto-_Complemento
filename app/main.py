@@ -17,8 +17,8 @@ app = FastAPI(title='API de Gerenciamento de Tarefas - dato®',
 app.include_router(tarefa_router)   # tarefa_router é o alias da instancia router (importada acima)
 
 @app.get("/")
-def read_root():
-    return {"message": "API de gerenciamento de tarefas - PIXAFLOW"}
+def home():
+    return {"message": "API de gerenciamento de tarefas gvdfogjpoidfsug9uad8-yvku8d-yu09-ukrdt9vyui9yil=si- PIXAFLOW"}
 
 
 
