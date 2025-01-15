@@ -140,10 +140,15 @@ $ uvicorn app.main:app --reload --reload-dir=app
 ### 3. Acessar a Documentação
 <h3 style="color:#ff6900">Acesse a documentação interativa da API no navegador:</h3>
 
-- **Swagger UI**: [http://localhost:8000/docs](http://127.0.0.1:8000/docs)
+Ajuste para a porta corrreta
 
+`Localmente (uvicorn):` 8000
+- **Swagger UI**: [http://localhost:8000/docs](http://127.0.0.1:8000/docs) 
+- **Redoc**: [http://localhost:8000/redoc](http://127.0.0.1:8000/redoc)  
 
-- **Redoc**: [http://localhost:8000/redoc](http://127.0.0.1:8000/redoc)
+`Via Docker:` 9000
+- **Swagger UI**: [http://localhost:9000/docs](http://127.0.0.1:9000/docs) 
+- **Redoc**: [http://localhost:9000/redoc](http://127.0.0.1:9000/redoc)  
 
 
 ---
