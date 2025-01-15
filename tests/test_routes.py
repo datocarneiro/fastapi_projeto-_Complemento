@@ -46,9 +46,9 @@ def test_criar_tarefa(test_client):
     response = test_client.post("/tarefas", json=tarefa_data, headers=headers)
     assert response.status_code == 200
     data = response.json()
-    assert data["titulo"] == "Teste de Tarefa"
-    assert data["descricao"] == "Descrição da tarefa de teste"
-    assert data["status"] == "pendente"
+    assert data['data'][0]["titulo"] == "Teste de Tarefa"
+    assert data['data'][0]["descricao"] == "Descrição da tarefa de teste"
+    assert data['data'][0]["status"] == "pendente"
 
 def test_obter_tarefas_nao_vazio(test_client):
     login_data = {"username": os.getenv("ADMIN_USERNAME"), "password": os.getenv("ADMIN_PASSWORD")}
