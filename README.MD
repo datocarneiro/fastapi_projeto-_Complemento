@@ -125,15 +125,19 @@ DB_PORT=<valor>
 
 ---
 
-## Executar a API
+## Executar a API sem docker
 
-### 1. Iniciar o Servidor Local
+### 1. Ajuste as variavels de ambiente
+
+revisar as credenciais do banco local
+
+### 2. Iniciar o Servidor Local
 Execute o seguinte comando no terminal:
 ```bash
-$ uvicorn app.main:app --reload
+$ uvicorn app.main:app --reload --reload-dir=app
 ```
 
-### 2. Acessar a Documentação
+### 3. Acessar a Documentação
 <h3 style="color:#ff6900">Acesse a documentação interativa da API no navegador:</h3>
 
 - **Swagger UI**: [http://localhost:8000/docs](http://127.0.0.1:8000/docs)
