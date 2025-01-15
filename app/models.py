@@ -51,8 +51,10 @@ class TarefaSchema(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
+# base das resposnses
 class TarefaListResponse(BaseModel):
-    message: str = "Lista de tarefas"
+    message: str = "Operation completed successfully"
     data: List[TarefaSchema] = []
 
 
