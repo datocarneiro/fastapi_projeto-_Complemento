@@ -119,6 +119,7 @@ DB_PASSWORD=<valor>
 DB_HOST=<valor>
 DB_NAME=<valor>
 DB_PORT=<valor>
+
 ```
 <h4 style="color:#ff6900">Substitua os valores com as configurações adequadas ao seu ambiente.</h4>
 
