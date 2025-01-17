@@ -114,6 +114,7 @@ FULL_NAME=<valor>
 EMAIL=<valor>
 PASSWORD=<valor>
 
+MYSQL_ROOT_PASSWORD=<valor>
 DB_USER=<valor>
 DB_PASSWORD=<valor>
 DB_HOST=<valor>
