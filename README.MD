@@ -72,7 +72,10 @@ $ docker-compose down
 
 ## Migrações do Banco de Dados
 
-As migrações são gerenciadas pelo Alembic. Abaixo estão os principais comandos para lidar com migrações:
+
+### 0. Configurar Alembic**
+Antes de executar migrações, é necessário configurar corretamente o Alembic no arquivo `alembic.ini` e `env.py` .
+
 
 ### 1. Criar uma Nova Migração
 Ao alterar os modelos, crie uma nova migração:
@@ -127,7 +130,7 @@ DB_PORT=<valor>
 
 ---
 
-## Executar a API sem docker
+## Executar a API sem dockerz
 
 ### 1. Ajuste as variavels de ambiente
 

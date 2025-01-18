@@ -1,5 +1,4 @@
-
-services:
+services: 
   web:
     build: .
     container_name: api_tarefas
@@ -9,6 +8,8 @@ services:
       - .env
     depends_on:
       - db
+    networks:
+      - app_network  # Associação ao network personalizado
     entrypoint: ["sh", "-c", "sleep 20 && uvicorn app.main:app --host 0.0.0.0 --port 9000"]
 
   db:
@@ -21,7 +22,12 @@ services:
       - "3307:3306"  # Exposição da porta 3306 do MySQL no host como 3307
     volumes:
       - mysql_data:/var/lib/mysql  # Persistência dos dados do MySQL
+    networks:
+      - app_network  #
+  
+networks:
+  app_network:
 
 volumes:
-  mysql_data:  # Volume persistente para os dados do banco
+  mysql_data: 
 
