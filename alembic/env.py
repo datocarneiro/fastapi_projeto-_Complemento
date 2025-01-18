@@ -2,11 +2,10 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from alembic import context
+from app.models import Base
 from dotenv import load_dotenv
 import os
-from app.models import Base
 
-# Carregar variáveis de ambiente do arquivo .env
 load_dotenv()
 
 credenciais = {
@@ -18,7 +17,6 @@ credenciais = {
 }
 
 DATABASE_URL = f"mysql+pymysql://{credenciais.get('USUARIO')}:{credenciais.get('SENHA')}@{credenciais.get('HOST')}:{credenciais.get('PORT')}/{credenciais.get('BANCO')}"
-
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
