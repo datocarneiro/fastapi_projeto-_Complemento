@@ -51,5 +51,3 @@ def test_rotea_autenticada(test_client):
     response = test_client.get("/tarefas", headers=headers)
     assert response.status_code == 200
     assert response.json() == {"message": "Não há tarefas criadas", "data": []}
-
-
