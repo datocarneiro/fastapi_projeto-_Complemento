@@ -61,7 +61,6 @@ def delete_tarefa_id(dados_tarefa: TarefaID, db: Session = Depends(get_db), curr
     
     delete_task_id(db, tarefa)
 
-    # return {"message": f'Tarefa ID: {dados_tarefa.id} deletada com sucesso.'}
     return TarefaListResponse(message=f'Tarefa ID: {dados_tarefa.id} deletada com sucesso. Informações da terefa excluída:',data=[tarefa])
 
 class LoginInput(BaseModel):
