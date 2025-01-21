@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import declarative_base, validates, relationship, Mapped
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, field_validator
 from typing import Optional, ClassVar
 from datetime import datetime
 from typing import List
@@ -61,7 +61,9 @@ class Tarefa(Base):
             raise ValueError(f"Nível de prioridade '{value}' inválido. Deve ser um dos {self.NIVEIS_VALIDOS}.")
         return value
     
-
+#################################################################################
+#                                   SCHEMAS TAREFAS                     
+#################################################################################
 # Modelos Pydantic para validação e serialização
 class CriarTarefa(BaseModel):
     titulo: str
@@ -96,24 +98,85 @@ class AtualizarTarefa(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-
-
-    
 class TarefaID(BaseModel):
     id: int 
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class LoginInput(BaseModel):
-    username: str
+
+class TarefaSimples(BaseModel):
+    id: int
+    titulo: str
+    descricao: Optional[str]
+    status: str
+    nivel_prioridade: Optional[str]
+    data_criacao: datetime
+    data_atualizacao: datetime
+    
+    model_config = ConfigDict(from_attributes=True)
+
+class TarefaCompleta(BaseModel):
+    id: int
+    titulo: str
+    descricao: Optional[str]
+    status: str
+    nivel_prioridade: Optional[str]
+    data_criacao: datetime
+    data_atualizacao: datetime
+    usuario_id: Optional[int]
+    usuario: Optional["BaseUsuarioSimples"]
+  
+    model_config = ConfigDict(from_attributes=True)
+
+class TarefaSchema(BaseModel):
+    id: int
+    titulo: str
+    descricao: Optional[str]
+    status: str
+    nivel_prioridade: Optional[str]
+    data_criacao: datetime
+    data_atualizacao: datetime
+    usuario_id: Optional[int]
+    usuario: Optional["BaseUsuarioSimples"]
+  
+    model_config = ConfigDict(from_attributes=True)
+
+# base das resposnses
+class TarefaListResponse(BaseModel):
+    message: str = "Operation completed successfully"
+    data: List[TarefaCompleta] = []
+
+#################################################################################
+#                                   SCHEMAS USUARIO                     
+#################################################################################
+
+class BaseUsuarioCadastro(BaseModel):
+    id: Optional[int] = None
+    nome: str
+    cpf: str
     password: str
+    
+    model_config = ConfigDict(from_attributes=True)
 
 class BaseUsuarioSimples(BaseModel):
     id: Optional[int] = None
     nome: str
     cpf: str
-    password: str
+    active: Optional[bool] = None
+    data_criacao: datetime
+    data_atualizacao: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+class BaseUsuarioCompleto(BaseModel):
+    id: Optional[int] = None
+    nome: str
+    cpf: str
+    active: Optional[bool] = None
+    data_criacao: datetime
+    data_atualizacao: datetime
+    tarefas: List[TarefaSimples] = []
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -125,32 +188,19 @@ class BaseUsuarioSchema(BaseModel):
     active: Optional[bool] = None
     data_criacao: datetime
     data_atualizacao: datetime
+    
 
     model_config = ConfigDict(from_attributes=True)
-
-
-class TarefaSchema(BaseModel):
-    id: int
-    titulo: str
-    descricao: Optional[str]
-    status: str
-    nivel_prioridade: Optional[str]
-    data_criacao: datetime
-    data_atualizacao: datetime
-    usuario_id: Optional[int]
-    usuario: Optional[BaseUsuarioSimples]
-
-    model_config = ConfigDict(from_attributes=True)
-
-# base das resposnses
-class TarefaListResponse(BaseModel):
-    message: str = "Operation completed successfully"
-    data: List[TarefaSchema] = []
 
 # base das resposnses Usuario
 class UsuarioListResponse(BaseModel):
     message: str = "Operation completed successfully"
-    data: List[BaseUsuarioSchema] = []
+    data: List[BaseUsuarioCompleto] = []
 
 
+class UsuarioID(BaseModel):
+    id: int 
 
+class LoginInput(BaseModel):
+    username: str
+    password: str

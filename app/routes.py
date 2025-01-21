@@ -1,12 +1,10 @@
 from datetime import timedelta
-from typing import List
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from app.models import Tarefa, AtualizarTarefa, CriarTarefa, TarefaID, TarefaListResponse, LoginInput,\
-    BaseUsuarioSimples, BaseUsuarioSchema, UsuarioListResponse
+from app.models import (AtualizarTarefa, CriarTarefa, TarefaID, TarefaListResponse, LoginInput,\
+    BaseUsuarioCadastro, UsuarioListResponse, BaseUsuarioSimples, UsuarioID)
 from app.db import insert_tarefa, get_all_tarefas, get_task_id, update_task_id, delete_task_id
-from app.usuario_db import insert_usuario, read_usuarios
+from app.usuario_db import insert_usuario, read_usuarios, read_usuario_id
 from app.auth import ACCESS_TOKEN_EXPIRE_MINUTES, authenticate_user, create_access_token, get_current_user, fake_users_db
 from app.conn_database import SessionLocal
 
@@ -77,8 +75,8 @@ def login(login_data: LoginInput):
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.post("/usuario", response_model=BaseUsuarioSchema)
-def criar_usuario(usuario: BaseUsuarioSimples, session_db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+@router.post("/sinup", response_model=BaseUsuarioSimples)
+def criar_usuario(usuario: BaseUsuarioCadastro, session_db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     try:       
         usuario_criado = insert_usuario(session_db, usuario)
         return usuario_criado
@@ -89,3 +87,10 @@ def criar_usuario(usuario: BaseUsuarioSimples, session_db: Session = Depends(get
 def listar_usuario(sesion_db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     listar_usuario = read_usuarios(sesion_db)
     return UsuarioListResponse(data=listar_usuario)
+
+@router.get('/usuario', response_model= UsuarioListResponse)
+def buscar_usuario_id(usuario_id: UsuarioID, sesion_db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    usuario_localizado = read_usuario_id(usuario_id.id, sesion_db)
+    if not usuario_localizado:
+        raise HTTPException(status_code=404, detail=f"Usuario ID: {usuario_id.id} não encontrado")
+    return UsuarioListResponse(data=[usuario_localizado])
