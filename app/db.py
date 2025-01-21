@@ -1,4 +1,5 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import select
 from app.models import Tarefa, AtualizarTarefa
 
 def get_all_tarefas(db: Session):
@@ -16,8 +17,10 @@ def insert_tarefa(db: Session, tarefa: Tarefa) -> Tarefa:
     db.refresh(nova_tarefa)
     return nova_tarefa
 
-def get_task_id(db: Session, tarefa_id: int):
-    return db.query(Tarefa).filter(Tarefa.id == tarefa_id).first()
+def get_task_id(db: Session, tarefa_id: int) -> Tarefa:
+    query = select(Tarefa).options(joinedload(Tarefa.usuario)).filter(Tarefa.id == tarefa_id)
+    return db.scalars(query).first()
+
 
 def update_task_id(db: Session, tarefa: Tarefa, dados: AtualizarTarefa) -> Tarefa:
     if dados.id:
