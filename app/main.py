@@ -11,6 +11,7 @@ descrição = '''
 app = FastAPI(title='API de Gerenciamento de Tarefas - dato®',
               version='2.0',
               description=descrição,
+              debug=True
               )
 
 # Incluir os endpoints no FastAPI

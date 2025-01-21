@@ -6,10 +6,15 @@ def get_all_tarefas(db: Session):
     return tarefas
 
 def insert_tarefa(db: Session, tarefa: Tarefa) -> Tarefa:
-    db.add(tarefa)
+    nova_tarefa = Tarefa(titulo=tarefa.titulo, 
+                         descricao=tarefa.descricao,
+                         status=tarefa.status,
+                         nivel_prioridade=tarefa.nivel_prioridade,
+                         usuario_id=tarefa.usuario_id)
+    db.add(nova_tarefa)
     db.commit()
-    db.refresh(tarefa)
-    return tarefa
+    db.refresh(nova_tarefa)
+    return nova_tarefa
 
 def get_task_id(db: Session, tarefa_id: int):
     return db.query(Tarefa).filter(Tarefa.id == tarefa_id).first()

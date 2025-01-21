@@ -1,9 +1,12 @@
 from datetime import timedelta
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from app.models import Tarefa as ModelTarefa, AtualizarTarefa, CriarTarefa, TarefaID, TarefaListResponse, TarefaSchema
+from app.models import Tarefa, AtualizarTarefa, CriarTarefa, TarefaID, TarefaListResponse, LoginInput,\
+    BaseUsuarioSimples, BaseUsuarioSchema, UsuarioListResponse
 from app.db import insert_tarefa, get_all_tarefas, get_task_id, update_task_id, delete_task_id
+from app.usuario_db import insert_usuario, read_usuarios
 from app.auth import ACCESS_TOKEN_EXPIRE_MINUTES, authenticate_user, create_access_token, get_current_user, fake_users_db
 from app.conn_database import SessionLocal
 
@@ -31,8 +34,7 @@ def get_tarefas(db: Session = Depends(get_db), current_user: dict = Depends(get_
 @router.post("/tarefa", response_model=TarefaListResponse)
 def push_tarefa(tarefa: CriarTarefa, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     try:
-        nova_tarefa = ModelTarefa(titulo=tarefa.titulo, descricao=tarefa.descricao, status=tarefa.status, nivel_prioridade=tarefa.nivel_prioridade)
-        tarefa_criada = insert_tarefa(db, nova_tarefa)
+        tarefa_criada = insert_tarefa(db, tarefa)
         return TarefaListResponse(data=[tarefa_criada])
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -63,15 +65,27 @@ def delete_tarefa_id(dados_tarefa: TarefaID, db: Session = Depends(get_db), curr
 
     return TarefaListResponse(message=f'Tarefa ID: {dados_tarefa.id} deletada com sucesso. Informações da terefa excluída:',data=[tarefa])
 
-class LoginInput(BaseModel):
-    username: str
-    password: str
 
 @router.post("/auth")
 def login(login_data: LoginInput):
     user = authenticate_user(fake_users_db, login_data.username, login_data.password)
+    
     if not user:
         raise HTTPException(status_code=401, detail="Usuário ou senha inválidos")
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(data={"sub": user["username"]}, expires_delta=access_token_expires)
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+@router.post("/usuario", response_model=BaseUsuarioSchema)
+def criar_usuario(usuario: BaseUsuarioSimples, session_db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    try:       
+        usuario_criado = insert_usuario(session_db, usuario)
+        return usuario_criado
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+@router.get('/usuarios', response_model=UsuarioListResponse)
+def listar_usuario(sesion_db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    listar_usuario = read_usuarios(sesion_db)
+    return UsuarioListResponse(data=listar_usuario)

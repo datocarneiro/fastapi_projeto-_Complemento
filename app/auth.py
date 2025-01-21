@@ -40,14 +40,14 @@ fake_users_db = {
     },
 }
 
+# gerar hash da senha
+def get_password_hash(password):
+    return pwd_context.hash(password)
 
-# Função para verificar senha
+# verificar senha
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
-# Função para obter hash da senha
-def get_password_hash(password):
-    return pwd_context.hash(password)
 
 # Função para obter usuário pelo nome
 def get_user(db, username: str):
