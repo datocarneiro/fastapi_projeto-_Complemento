@@ -1,6 +1,23 @@
 services: 
-  web:
-    build: .
+  db:
+    image: mysql:8.0
+    container_name: mysql_dato
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}  # Senha do usuário root
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER : ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+
+    ports:
+      - "3307:3306"  # Exposição da porta 3306 do MySQL no host como 3307
+    volumes:
+      - mysql_data:/var/lib/mysql  # Persistência dos dados do MySQL
+    networks:
+      - app_network 
+
+  api:
+    build:
+      context: .
     container_name: api_tarefas
     ports:
       - "9000:9000"  # Porta exposta para o contêiner
@@ -9,21 +26,8 @@ services:
     depends_on:
       - db
     networks:
-      - app_network  # Associação ao network personalizado
-    entrypoint: ["sh", "-c", "sleep 20 && uvicorn app.main:app --host 0.0.0.0 --port 9000"]
+      - app_network  
 
-  db:
-    image: mysql:8.0
-    container_name: mysql_db
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}  # Senha do usuário root
-      MYSQL_DATABASE: ${DB_NAME}
-    ports:
-      - "3307:3306"  # Exposição da porta 3306 do MySQL no host como 3307
-    volumes:
-      - mysql_data:/var/lib/mysql  # Persistência dos dados do MySQL
-    networks:
-      - app_network  #
   
 networks:
   app_network:

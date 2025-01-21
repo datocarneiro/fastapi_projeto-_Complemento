@@ -117,7 +117,7 @@ FULL_NAME=<valor>
 EMAIL=<valor>
 PASSWORD=<valor>
 
-MYSQL_ROOT_PASSWORD=<valor>
+DB_ROOT_PASSWORD=<valor>
 DB_USER=<valor>
 DB_PASSWORD=<valor>
 DB_HOST=<valor>
@@ -155,6 +155,8 @@ Ajuste para a porta corrreta
 - **Swagger UI**: [http://localhost:9000/docs](http://127.0.0.1:9000/docs) 
 - **Redoc**: [http://localhost:9000/redoc](http://127.0.0.1:9000/redoc)  
 
+
+Se estiver usando pelo docker, altere a porta da url de acordo com a porte definida nos arquivos de configuração do docker
 
 ---
 
@@ -198,7 +200,6 @@ $ pytest
 ├── pytest.ini
 ├── README.md
 ├── alembic.ini       
-├── wait-for-it.sh      
 ```
 
 ### Descrição dos Arquivos
