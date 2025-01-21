@@ -86,6 +86,8 @@ def criar_usuario(usuario: BaseUsuarioCadastro, session_db: Session = Depends(ge
 @router.get('/usuarios', response_model=UsuarioListResponse)
 def listar_usuario(sesion_db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     listar_usuario = read_usuarios(sesion_db)
+    if not listar_usuario:
+        return TarefaListResponse(message="Não há Usuarios cadastrados")
     return UsuarioListResponse(data=listar_usuario)
 
 @router.get('/usuario', response_model= UsuarioListResponse)
