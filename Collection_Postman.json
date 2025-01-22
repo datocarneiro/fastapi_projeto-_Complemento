@@ -1,0 +1,379 @@
+{
+  "info": {
+    "name": "Api Tarefas",
+    "description": "",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "bruno",
+      "event": []
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Auth",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "{{BaseUrl}}:{{Port}}/auth",
+              "protocol": "",
+              "host": [
+                "{{BaseUrl}}:{{Port}}"
+              ],
+              "path": [
+                "auth"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{user}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tarefa",
+      "item": [
+        {
+          "name": "Atualizar Tarefa",
+          "event": [],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            },
+            "description": "",
+            "url": {
+              "raw": "{{BaseUrl}}:{{Port}}/tarefa",
+              "protocol": "",
+              "host": [
+                "{{BaseUrl}}:{{Port}}"
+              ],
+              "path": [
+                "tarefa"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 8,\n  \"status\": \"concluída\",\n  \"nivel_prioridade\": \"alto\",\n  \"titulo\": \"atualizando Titulo\",\n  \"descricao\": \"atualizando descrição\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "BuscaTarefaID",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            },
+            "description": "",
+            "url": {
+              "raw": "{{BaseUrl}}:{{Port}}/tarefa",
+              "protocol": "",
+              "host": [
+                "{{BaseUrl}}:{{Port}}"
+              ],
+              "path": [
+                "tarefa"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 8// tipo Inteiro(obrigatorio) \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Consultar Tarefas",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            },
+            "description": "",
+            "url": {
+              "raw": "{{BaseUrl}}:{{Port}}/tarefas",
+              "protocol": "",
+              "host": [
+                "{{BaseUrl}}:{{Port}}"
+              ],
+              "path": [
+                "tarefas"
+              ],
+              "query": [],
+              "variable": []
+            }
+          }
+        },
+        {
+          "name": "Criar tarefas",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            },
+            "description": "",
+            "url": {
+              "raw": "{{BaseUrl}}:{{Port}}/tarefa",
+              "protocol": "",
+              "host": [
+                "{{BaseUrl}}:{{Port}}"
+              ],
+              "path": [
+                "tarefa"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"string\",\n  \"status\": \"em andamento\",\n  \"usuario_id\": 1\n//   \"descricao\": \"tarefa descrição\",\n  \n//   \"nivel_prioridade\": \"médio\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Deletar Tarefa",
+          "event": [],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            },
+            "description": "",
+            "url": {
+              "raw": "{{BaseUrl}}:{{Port}}/tarefa",
+              "protocol": "",
+              "host": [
+                "{{BaseUrl}}:{{Port}}"
+              ],
+              "path": [
+                "tarefa"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 8 // tipo Inteiro(obrigatorio) \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Usuario",
+      "item": [
+        {
+          "name": "BuscarUsuarioID",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            },
+            "description": "",
+            "url": {
+              "raw": "{{BaseUrl}}:{{Port}}/usuario",
+              "protocol": "",
+              "host": [
+                "{{BaseUrl}}:{{Port}}"
+              ],
+              "path": [
+                "usuario"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1   // tipo Inteiro(obrigatorio) \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Consultar usuarios",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            },
+            "description": "",
+            "url": {
+              "raw": "{{BaseUrl}}:{{Port}}/usuarios",
+              "protocol": "",
+              "host": [
+                "{{BaseUrl}}:{{Port}}"
+              ],
+              "path": [
+                "usuarios"
+              ],
+              "query": [],
+              "variable": []
+            }
+          }
+        },
+        {
+          "name": "Sinup Usuario",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            },
+            "description": "",
+            "url": {
+              "raw": "{{BaseUrl}}:{{Port}}/sinup",
+              "protocol": "",
+              "host": [
+                "{{BaseUrl}}:{{Port}}"
+              ],
+              "path": [
+                "sinup"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Dato TESTE 4\",\n  \"cpf\": \"575.669.660-14\",\n  \"password\": \"1010\"\n}\n\n// 320.107.200-16\n\n// 029.478.210-92\n// 889.897.490-69\n// 575.669.660-14\n// 617.677.690-24",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "BaseUrl",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "Port",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "user",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "password",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "Token",
+      "value": "",
+      "type": "default"
+    }
+  ]
+}

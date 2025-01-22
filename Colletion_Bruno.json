@@ -1,0 +1,359 @@
+{
+  "name": "Api Tarefas",
+  "version": "1",
+  "items": [
+    {
+      "type": "folder",
+      "name": "Auth",
+      "items": [
+        {
+          "type": "http",
+          "name": "Auth",
+          "seq": 1,
+          "request": {
+            "url": "{{BaseUrl}}:{{Port}}/auth",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"username\": \"{{user}}\",\n  \"password\": \"{{password}}\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "none"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "Tarefa",
+      "items": [
+        {
+          "type": "http",
+          "name": "Atualizar Tarefa",
+          "seq": 4,
+          "request": {
+            "url": "{{BaseUrl}}:{{Port}}/tarefa",
+            "method": "PUT",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"id\": 8,\n  \"status\": \"concluída\",\n  \"nivel_prioridade\": \"alto\",\n  \"titulo\": \"atualizando Titulo\",\n  \"descricao\": \"atualizando descrição\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{token}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "BuscaTarefaID",
+          "seq": 3,
+          "request": {
+            "url": "{{BaseUrl}}:{{Port}}/tarefa",
+            "method": "GET",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"id\": 8// tipo Inteiro(obrigatorio) \n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{token}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Consultar Tarefas",
+          "seq": 2,
+          "request": {
+            "url": "{{BaseUrl}}:{{Port}}/tarefas",
+            "method": "GET",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{token}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Criar tarefas",
+          "seq": 1,
+          "request": {
+            "url": "{{BaseUrl}}:{{Port}}/tarefa",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"titulo\": \"string\",\n  \"status\": \"em andamento\",\n  \"usuario_id\": 1\n//   \"descricao\": \"tarefa descrição\",\n  \n//   \"nivel_prioridade\": \"médio\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{token}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Deletar Tarefa",
+          "seq": 5,
+          "request": {
+            "url": "{{BaseUrl}}:{{Port}}/tarefa",
+            "method": "DELETE",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"id\": 8 // tipo Inteiro(obrigatorio) \n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{token}}"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "Usuario",
+      "items": [
+        {
+          "type": "http",
+          "name": "BuscarUsuarioID",
+          "seq": 3,
+          "request": {
+            "url": "{{BaseUrl}}:{{Port}}/usuario",
+            "method": "GET",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"id\": 1   // tipo Inteiro(obrigatorio) \n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{token}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Consultar usuarios",
+          "seq": 2,
+          "request": {
+            "url": "{{BaseUrl}}:{{Port}}/usuarios",
+            "method": "GET",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{token}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Sinup Usuario",
+          "seq": 1,
+          "request": {
+            "url": "{{BaseUrl}}:{{Port}}/sinup",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"nome\": \"Dato TESTE 4\",\n  \"cpf\": \"575.669.660-14\",\n  \"password\": \"1010\"\n}\n\n// 320.107.200-16\n\n// 029.478.210-92\n// 889.897.490-69\n// 575.669.660-14\n// 617.677.690-24",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{token}}"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "activeEnvironmentUid": "U3zKSWYdMeV0TKIuL7YUQ",
+  "environments": [
+    {
+      "variables": [
+        {
+          "name": "user",
+          "value": "admin",
+          "enabled": true,
+          "secret": false,
+          "type": "text"
+        },
+        {
+          "name": "password",
+          "value": "admin123",
+          "enabled": true,
+          "secret": false,
+          "type": "text"
+        }
+      ],
+      "name": "ApiTarefa"
+    }
+  ],
+  "root": {
+    "request": {
+      "auth": {
+        "mode": "bearer",
+        "bearer": {
+          "token": "{{Token}}"
+        }
+      },
+      "headers": [
+        {
+          "name": "",
+          "value": "",
+          "enabled": true,
+          "uid": "GPTl5igrrZHRvVfVFqoWH"
+        }
+      ],
+      "vars": {
+        "req": [
+          {
+            "name": "BaseUrl",
+            "value": "http://localhost",
+            "enabled": true,
+            "local": false,
+            "uid": "InOy4gSZYx6yeJcXctnFC"
+          },
+          {
+            "name": "Port",
+            "value": "9000",
+            "enabled": true,
+            "local": false,
+            "uid": "YJhrtu5NbNG7zVqXd7g4c"
+          },
+          {
+            "name": "\"username\"",
+            "value": "\"string\",",
+            "enabled": true,
+            "local": false,
+            "uid": "lgKw6ISsbYWv7ew5gwvzK"
+          },
+          {
+            "name": "\"password\"",
+            "value": "\"string\"",
+            "enabled": true,
+            "local": false,
+            "uid": "mTSoOWiTEmxxW2VOH6J3A"
+          },
+          {
+            "name": "token",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTczNzUyNDY5MX0.veLKvdOeeHrN4ETiAtYLA8WcouoKkZqL85QmAlfdaW4",
+            "enabled": true,
+            "local": false,
+            "uid": "FAHYUavo0W3UzX9N2KItA"
+          }
+        ]
+      }
+    }
+  },
+  "brunoConfig": {
+    "version": "1",
+    "name": "Api Tarefas",
+    "type": "collection",
+    "ignore": [
+      "node_modules",
+      ".git"
+    ]
+  }
+}
