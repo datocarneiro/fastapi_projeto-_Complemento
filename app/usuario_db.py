@@ -1,5 +1,5 @@
 from sqlalchemy import select
-from app.models import Usuario, UsuarioListResponse, BaseUsuarioSimples
+from app.models import Usuario, BaseUsuarioSimples
 
 
 def insert_usuario(session_db, usuario: Usuario ) -> Usuario:
@@ -17,6 +17,14 @@ def read_usuarios(session_db) -> BaseUsuarioSimples:
 
 def read_usuario_id(usuario_id: int, session_db) -> BaseUsuarioSimples:
     query = select(Usuario).filter(Usuario.id == usuario_id)
+    usuario_encontrado = session_db.scalars(query).first()
+    return usuario_encontrado
+
+
+
+
+def read_usuario_cpf(session_db, usuario_cpf) -> BaseUsuarioSimples:
+    query = select(Usuario).filter(Usuario.cpf == usuario_cpf)
     usuario_encontrado = session_db.scalars(query).first()
     return usuario_encontrado
 

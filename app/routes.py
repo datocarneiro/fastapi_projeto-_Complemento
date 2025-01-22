@@ -4,9 +4,10 @@ from sqlalchemy.orm import Session
 from app.models import (AtualizarTarefa, CriarTarefa, TarefaID, TarefaListResponse, LoginInput,\
     BaseUsuarioCadastro, UsuarioListResponse, BaseUsuarioSimples, UsuarioID)
 from app.db import insert_tarefa, get_all_tarefas, get_task_id, update_task_id, delete_task_id
-from app.usuario_db import insert_usuario, read_usuarios, read_usuario_id
-from app.auth import ACCESS_TOKEN_EXPIRE_MINUTES, authenticate_user, create_access_token, get_current_user, fake_users_db
+from app.usuario_db import insert_usuario, read_usuario_cpf, read_usuarios, read_usuario_id
+from app.auth import ACCESS_TOKEN_EXPIRE_MINUTES, authenticate_user, create_access_token, get_current_user, get_password_hash, fake_users_db
 from app.conn_database import SessionLocal
+from app.validador_cpf import validar_cpf
 
 router = APIRouter()
 
@@ -77,6 +78,13 @@ def login(login_data: LoginInput):
 
 @router.post("/sinup", response_model=BaseUsuarioSimples)
 def criar_usuario(usuario: BaseUsuarioCadastro, session_db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    valida_cpf = validar_cpf(usuario.cpf)
+
+    encontrar_usuario = read_usuario_cpf(session_db, valida_cpf)
+    if encontrar_usuario:
+        raise HTTPException(status_code=404, detail=f"Ja existe um usuario cadastrado com o CPF: {valida_cpf}.")
+
+    usuario.password = get_password_hash(usuario.password)
     try:       
         usuario_criado = insert_usuario(session_db, usuario)
         return usuario_criado

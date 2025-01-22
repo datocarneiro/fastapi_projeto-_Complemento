@@ -4,6 +4,7 @@ from pydantic import BaseModel, ConfigDict, field_validator
 from typing import Optional, ClassVar
 from datetime import datetime
 from typing import List
+from app.validador_cpf import validar_cpf
 import pytz
 
 # Declarative Base para os modelos SQLAlchemy
@@ -15,19 +16,24 @@ TZ = pytz.timezone("America/Sao_Paulo")
 # Função para ajustar a data ao fuso horário
 def now_tz():
     return datetime.now(TZ)
-
+    
 class Usuario(Base):
     __tablename__ = "conta_usuario"
 
     id = Column(Integer, primary_key=True, autoincrement=True, index=True)
     nome = Column(String(255), nullable=False, index=True)
-    cpf = Column(String(500), nullable=False)
-    password = Column(String(20), nullable=False, index=True)
+    cpf = Column(String(14), nullable=False)
+    password = Column(String(100), nullable=False, index=True)
     active = Column(Boolean(), nullable=True, default=True)
     data_criacao = Column(DateTime, default=now_tz)
     data_atualizacao = Column(DateTime, default=now_tz, onupdate=now_tz)
 
     tarefas: Mapped[List['Tarefa']] = relationship('Tarefa', back_populates='usuario')
+
+    @validates('cpf')
+    def validate_cpf(self, key, cpf_value):
+        # Usando a função de validação importada
+        return validar_cpf(cpf_value)  # Retorna o CPF formatado após validação
 
 class Tarefa(Base):
     __tablename__ = "tarefas"
@@ -60,6 +66,7 @@ class Tarefa(Base):
         if value not in self.NIVEIS_VALIDOS and value is not None:
             raise ValueError(f"Nível de prioridade '{value}' inválido. Deve ser um dos {self.NIVEIS_VALIDOS}.")
         return value
+
     
 #################################################################################
 #                                   SCHEMAS TAREFAS                     
