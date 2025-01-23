@@ -22,7 +22,6 @@ def get_db():
     finally:
         db.close()
 
-
 @router.get("/tarefas", response_model=TarefaListResponse)
 def get_tarefas(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     tarefas = get_all_tarefas(db)
@@ -30,8 +29,12 @@ def get_tarefas(db: Session = Depends(get_db), current_user: dict = Depends(get_
         return TarefaListResponse(message="Não há tarefas criadas")
     return TarefaListResponse(data=tarefas)
 
+
 @router.post("/tarefa", response_model=TarefaListResponse)
-def push_tarefa(tarefa: CriarTarefa, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+def push_tarefa(tarefa: CriarTarefa, sesion_db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    usuario_localizado = read_usuario_id(tarefa.usuario_id, sesion_db)
+    if not usuario_localizado:
+        raise HTTPException(status_code=404, detail=f"Não existe usuario com o ID: {tarefa.usuario_id}, verifique ou realize o cadastro")
     try:
         tarefa_criada = insert_tarefa(db, tarefa)
         return TarefaListResponse(data=[tarefa_criada])
@@ -63,33 +66,6 @@ def delete_tarefa_id(dados_tarefa: TarefaID, db: Session = Depends(get_db), curr
     delete_task_id(db, tarefa)
 
     return TarefaListResponse(message=f'Tarefa ID: {dados_tarefa.id} deletada com sucesso. Informações da terefa excluída:',data=[tarefa])
-
-
-@router.post("/auth")
-def login(login_data: LoginInput):
-    user = authenticate_user(fake_users_db, login_data.username, login_data.password)
-    
-    if not user:
-        raise HTTPException(status_code=401, detail="Usuário ou senha inválidos")
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(data={"sub": user["username"]}, expires_delta=access_token_expires)
-    return {"access_token": access_token, "token_type": "bearer"}
-
-
-@router.post("/sinup", response_model=BaseUsuarioSimples)
-def criar_usuario(usuario: BaseUsuarioCadastro, session_db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    valida_cpf = validar_cpf(usuario.cpf)
-
-    encontrar_usuario = read_usuario_cpf(session_db, valida_cpf)
-    if encontrar_usuario:
-        raise HTTPException(status_code=404, detail=f"Ja existe um usuario cadastrado com o CPF: {valida_cpf}.")
-
-    usuario.password = get_password_hash(usuario.password)
-    try:       
-        usuario_criado = insert_usuario(session_db, usuario)
-        return usuario_criado
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
     
 @router.get('/usuarios', response_model=UsuarioListResponse)
 def listar_usuario(sesion_db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
@@ -104,3 +80,37 @@ def buscar_usuario_id(usuario_id: UsuarioID, sesion_db: Session = Depends(get_db
     if not usuario_localizado:
         raise HTTPException(status_code=404, detail=f"Usuario ID: {usuario_id.id} não encontrado")
     return UsuarioListResponse(data=[usuario_localizado])
+
+
+
+@router.post("/auth")
+def login(login_data: LoginInput):
+    user = authenticate_user(fake_users_db, login_data.username, login_data.password)
+    
+    if not user:
+        raise HTTPException(status_code=401, detail="Usuário ou senha inválidos")
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(data={"sub": user["username"]}, expires_delta=access_token_expires)
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
+@router.post("/sinup",response_model=BaseUsuarioSimples)
+def criar_usuario(usuario: BaseUsuarioCadastro, session_db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    valida_cpf = validar_cpf(usuario.cpf)
+
+    encontrar_usuario = read_usuario_cpf(session_db, valida_cpf)
+    if encontrar_usuario:
+        raise HTTPException(status_code=404, detail=f"Ja existe um usuario cadastrado com o CPF: {valida_cpf}.")
+
+    usuario.password = get_password_hash(usuario.password)
+    try:       
+        usuario_criado = insert_usuario(session_db, usuario)
+        return usuario_criado
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+def login(usuario_data: LoginInput, session_db: Session):
+    usuario_cadastrado = read_usuario_cpf(session_db, usuario_data.cpf)
+    if not usuario_cadastrado:
+        raise HTTPException(status_code=404, detail=f'Usuario não cadastrado, registre-se.' )
+    
