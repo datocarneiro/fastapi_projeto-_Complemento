@@ -67,7 +67,6 @@ class Tarefa(Base):
             raise ValueError(f"Nível de prioridade '{value}' inválido. Deve ser um dos {self.NIVEIS_VALIDOS}.")
         return value
 
-    
 #################################################################################
 #                                   SCHEMAS TAREFAS                     
 #################################################################################
@@ -110,8 +109,6 @@ class TarefaID(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-
-
 class TarefaSimples(BaseModel):
     id: int
     titulo: str
@@ -133,7 +130,7 @@ class TarefaCompleta(BaseModel):
     data_atualizacao: datetime
     usuario_id: Optional[int]
     usuario: Optional["BaseUsuarioSimples"]
-  
+
     model_config = ConfigDict(from_attributes=True)
 
 class TarefaSchema(BaseModel):
@@ -149,10 +146,11 @@ class TarefaSchema(BaseModel):
   
     model_config = ConfigDict(from_attributes=True)
 
-# base das resposnses
 class TarefaListResponse(BaseModel):
     message: str = "Operation completed successfully"
     data: List[TarefaCompleta] = []
+
+    model_config = ConfigDict(from_attributes=True)
 
 #################################################################################
 #                                   SCHEMAS USUARIO                     
@@ -171,8 +169,8 @@ class BaseUsuarioSimples(BaseModel):
     nome: str
     cpf: str
     active: Optional[bool] = None
-    data_criacao: datetime
-    data_atualizacao: datetime
+    data_criacao: Optional[datetime] = None
+    data_atualizacao: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -196,18 +194,33 @@ class BaseUsuarioSchema(BaseModel):
     data_criacao: datetime
     data_atualizacao: datetime
     
-
     model_config = ConfigDict(from_attributes=True)
-
-# base das resposnses Usuario
+    
 class UsuarioListResponse(BaseModel):
     message: str = "Operation completed successfully"
     data: List[BaseUsuarioCompleto] = []
 
+    model_config = ConfigDict(from_attributes=True)
 
 class UsuarioID(BaseModel):
     id: int 
 
-class LoginInput(BaseModel):
-    username: str
+    model_config = ConfigDict(from_attributes=True)
+
+class BaseUsuarioAuth(BaseModel):
+    cpf: str
     password: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+class UsuarioData(BaseModel):
+    nome: str
+    cpf: str
+    active: Optional[bool] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+class BaseUsuarioAuthResponse(BaseModel):
+    data: UsuarioData
+    access_token: str
+    token_type: str
