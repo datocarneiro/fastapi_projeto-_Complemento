@@ -20,4 +20,4 @@ COPY wait-for-it.sh /wait-for-it.sh
 RUN chmod +x /wait-for-it.sh
 
 # Comando para iniciar a aplicação (definido no docker-compose.yml)
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "9000"]
+CMD ["sh", "-c", "sleep 20 && uvicorn app.main:app --host 0.0.0.0 --port 9000"]

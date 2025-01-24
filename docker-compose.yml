@@ -10,7 +10,6 @@ services:
       - db
     networks:
       - app_network  # Associação ao network personalizado
-    entrypoint: ["sh", "-c", "sleep 20 && uvicorn app.main:app --host 0.0.0.0 --port 9000"]
 
   db:
     image: mysql:8.0
