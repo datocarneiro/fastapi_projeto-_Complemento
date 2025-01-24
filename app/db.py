@@ -1,17 +1,18 @@
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import select
-from app.models import Tarefa, AtualizarTarefa
+from app.models import Tarefa, AtualizarTarefa, Usuario
 
 def get_all_tarefas(db: Session):
     tarefas = db.query(Tarefa).all()
     return tarefas
 
-def insert_tarefa(db: Session, tarefa: Tarefa) -> Tarefa:
+def insert_tarefa(db: Session, tarefa: Tarefa, usuario: int ) -> Tarefa:
     nova_tarefa = Tarefa(titulo=tarefa.titulo, 
                          descricao=tarefa.descricao,
                          status=tarefa.status,
                          nivel_prioridade=tarefa.nivel_prioridade,
-                         usuario_id=tarefa.usuario_id)
+                         usuario_id=usuario.id)
+
     db.add(nova_tarefa)
     db.commit()
     db.refresh(nova_tarefa)

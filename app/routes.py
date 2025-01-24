@@ -13,6 +13,7 @@ router = APIRouter()
 
 @router.get("/tarefas", response_model=TarefaListResponse)
 def get_tarefas(session_db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    
     try:
         tarefas = get_all_tarefas(session_db)  # Função que busca as tarefas no banco
         if not tarefas:
@@ -24,11 +25,13 @@ def get_tarefas(session_db: Session = Depends(get_db), current_user: dict = Depe
 
 @router.post("/tarefa", response_model=TarefaListResponse)
 def push_tarefa(tarefa: CriarTarefa, session_db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    usuario_localizado = read_usuario_id(tarefa.usuario_id, session_db)
-    if not usuario_localizado:
-        raise HTTPException(status_code=404, detail=f"Não existe usuario com o ID: {tarefa.usuario_id}, verifique ou realize o cadastro")
+    usuario_id = current_user
+    if not usuario_id:
+        raise HTTPException(status_code=401, detail="Usuário não autenticado.")
+
     try:
-        tarefa_criada = insert_tarefa(session_db, tarefa)
+        # Passa o usuário autenticado para a tarefa
+        tarefa_criada = insert_tarefa(session_db, tarefa, usuario_id)
         return TarefaListResponse(data=[tarefa_criada])
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -88,12 +91,13 @@ def sinup(usuario: BaseUsuarioCadastro, session_db: Session = Depends(get_db)):
 
 @router.post('/login', response_model=BaseUsuarioAuthResponse)
 def login(login_data: BaseUsuarioAuth, session_db: Session = Depends(get_db)):
-    verifica_usuario = read_usuario_cpf(session_db, login_data.cpf)
+    valida_cpf = validar_cpf(login_data.cpf)
+    verifica_usuario = read_usuario_cpf(session_db, valida_cpf)
     if not verifica_usuario:
         raise HTTPException(status_code=404, detail="Usuário não cadastrado, registre-se.")
     
     # Autentica o usuário
-    user = authenticate_user(session_db, login_data.cpf, login_data.password)
+    user = authenticate_user(session_db, valida_cpf, login_data.password)
     if not user:
         raise HTTPException(status_code=401, detail="Usuário ou senha inválidos")
     
@@ -105,9 +109,9 @@ def login(login_data: BaseUsuarioAuth, session_db: Session = Depends(get_db)):
         "nome": user.nome,
         "cpf": user.cpf,
         "active": user.active,
+        "access_token": access_token,
+        "token_type": "bearer"
     }
     
-    return  {   "data": usuario_data,
-                "access_token": access_token,
-                "token_type": "bearer"
-    }
+    return  {"data":usuario_data}
+        

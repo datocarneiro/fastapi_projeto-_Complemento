@@ -73,10 +73,9 @@ class Tarefa(Base):
 # Modelos Pydantic para validação e serialização
 class CriarTarefa(BaseModel):
     titulo: str
+    status: str 
     descricao: Optional[str] = None
-    status: str  # Agora o 'status' é obrigatório
     nivel_prioridade: Optional[str] = None  # 'nivel_prioridade' é opcional
-    usuario_id: int
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -217,10 +216,11 @@ class UsuarioData(BaseModel):
     nome: str
     cpf: str
     active: Optional[bool] = None
+    access_token: str
+    token_type: str
 
     model_config = ConfigDict(from_attributes=True)
 
 class BaseUsuarioAuthResponse(BaseModel):
     data: UsuarioData
-    access_token: str
-    token_type: str
+
