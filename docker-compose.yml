@@ -15,8 +15,10 @@ services:
     image: mysql:8.0
     container_name: mysql_db
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}  # Senha do usuário root
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}  # Senha do usuário root
       MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER : ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
       - "3307:3306"  # Exposição da porta 3306 do MySQL no host como 3307
     volumes:
