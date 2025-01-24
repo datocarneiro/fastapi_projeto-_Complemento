@@ -2,65 +2,66 @@ from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from app.models import Tarefa as ModelTarefa, AtualizarTarefa, CriarTarefa, TarefaSchema, TarefaListResponse
-from app.db import (adicionar_tarefa, listar_tarefas, buscar_tarefa_por_id, atualizar_tarefa_por_id, deletar_tarefa_por_id)
+from app.models import Tarefa as ModelTarefa, AtualizarTarefa, CriarTarefa, TarefaID, TarefaListResponse, TarefaSchema
+from app.db import insert_tarefa, get_all_tarefas, get_task_id, update_task_id, delete_task_id
 from app.auth import ACCESS_TOKEN_EXPIRE_MINUTES, authenticate_user, create_access_token, get_current_user, fake_users_db
-from app.database import SessionLocal
-from typing import List
-
+from app.conn_database import SessionLocal
 
 router = APIRouter()
 
+# essa função cria uma nova instância de sessão do banco de dados
 def get_db():
     db = SessionLocal()
     try:
+        '''A função usa yield em vez de return para gerar a sessão do banco de dados.
+        O uso de yield transforma a função em um "gerador" que permite ao FastAPI usar esta função como uma dependência. 
+        O FastAPI usará a sessão gerada (db) e a injetará em qualquer função que dependa dela.'''
         yield db
     finally:
         db.close()
 
 
 @router.get("/tarefas", response_model=TarefaListResponse)
-def obter_tarefas(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    tarefas = listar_tarefas(db)
+def get_tarefas(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    tarefas = get_all_tarefas(db)
     if not tarefas:
         return TarefaListResponse(message="Não há tarefas criadas")
     return TarefaListResponse(data=tarefas)
 
-@router.post("/tarefas", response_model=TarefaSchema)
-def criar_tarefa(tarefa: CriarTarefa, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    if tarefa.status not in ["pendente", "em andamento", "concluída"]:
-        raise HTTPException(status_code=400, detail="status inválido. Deve ser 'pendente', 'em andamento' ou 'concluída'")
-    nova_tarefa = ModelTarefa(titulo=tarefa.titulo, descricao=tarefa.descricao, status=tarefa.status)
-    tarefa_criada = adicionar_tarefa(db, nova_tarefa)
-    return tarefa_criada
+@router.post("/tarefa", response_model=TarefaListResponse)
+def push_tarefa(tarefa: CriarTarefa, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    try:
+        nova_tarefa = ModelTarefa(titulo=tarefa.titulo, descricao=tarefa.descricao, status=tarefa.status, nivel_prioridade=tarefa.nivel_prioridade)
+        tarefa_criada = insert_tarefa(db, nova_tarefa)
+        return TarefaListResponse(data=[tarefa_criada])
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
-@router.get("/tarefas/{tarefa_id}", response_model=TarefaSchema)
-def obter_tarefa_por_id(tarefa_id: int, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    tarefa = buscar_tarefa_por_id(db, tarefa_id)
+@router.get("/tarefa", response_model=TarefaListResponse)
+def get_tarefa_id(tarefa_id: TarefaID, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    tarefa = get_task_id(db, tarefa_id.id)
     if not tarefa:
-        raise HTTPException(status_code=404, detail="Tarefa não encontrada")
-    return tarefa
+        raise HTTPException(status_code=404, detail=f"Tarefa ID: {tarefa_id.id} não encontrada")
+    return TarefaListResponse(data=[tarefa])
 
-@router.put("/tarefas/{tarefa_id}", response_model=TarefaSchema)
-def atualizar_tarefa(tarefa_id: int, dados_tarefa: AtualizarTarefa, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    tarefa = buscar_tarefa_por_id(db, tarefa_id)
+@router.put("/tarefa", response_model=TarefaListResponse)
+def update_tarefa(dados_tarefa: AtualizarTarefa, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    tarefa = get_task_id(db, dados_tarefa.id)
     if not tarefa:
-        raise HTTPException(status_code=404, detail="Tarefa não encontrada")
+        raise HTTPException(status_code=404, detail=f'Tarefa ID: {dados_tarefa.id} não encontrada')
     
-    if dados_tarefa.status and dados_tarefa.status not in ["pendente", "em andamento", "concluída"]:
-        raise HTTPException(status_code=400, detail="status inválido. Deve ser 'pendente', 'em andamento' ou 'concluída'")
-    
-    tarefa_atualizada = atualizar_tarefa_por_id(db, tarefa, dados_tarefa)
-    return tarefa_atualizada
+    update_tarefa = update_task_id(db, tarefa, dados_tarefa)
+    return TarefaListResponse(data=[update_tarefa])
 
-@router.delete("/tarefas/{tarefa_id}")
-def deletar_tarefa(tarefa_id: int, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    tarefa = buscar_tarefa_por_id(db, tarefa_id)
+@router.delete("/tarefa", response_model=TarefaListResponse)
+def delete_tarefa_id(dados_tarefa: TarefaID, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    tarefa = get_task_id(db, dados_tarefa.id)
     if not tarefa:
-        raise HTTPException(status_code=404, detail="Tarefa não encontrada")
+        raise HTTPException(status_code=404, detail=f'Tarefa ID: {dados_tarefa.id} não encontrada')
     
-    deletar_tarefa_por_id(db, tarefa)
-    return {"message": f"Tarefa {tarefa_id} deletada com sucesso"}
+    delete_task_id(db, tarefa)
+
+    return TarefaListResponse(message=f'Tarefa ID: {dados_tarefa.id} deletada com sucesso. Informações da terefa excluída:',data=[tarefa])
 
 class LoginInput(BaseModel):
     username: str

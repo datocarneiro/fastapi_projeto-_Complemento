@@ -72,7 +72,10 @@ $ docker-compose down
 
 ## Migrações do Banco de Dados
 
-As migrações são gerenciadas pelo Alembic. Abaixo estão os principais comandos para lidar com migrações:
+
+### 0. Configurar Alembic**
+Antes de executar migrações, é necessário configurar corretamente o Alembic no arquivo `alembic.ini` e `env.py` .
+
 
 ### 1. Criar uma Nova Migração
 Ao alterar os modelos, crie uma nova migração:
@@ -114,32 +117,43 @@ FULL_NAME=<valor>
 EMAIL=<valor>
 PASSWORD=<valor>
 
+MYSQL_ROOT_PASSWORD=<valor>
 DB_USER=<valor>
 DB_PASSWORD=<valor>
 DB_HOST=<valor>
 DB_NAME=<valor>
 DB_PORT=<valor>
+
 ```
 <h4 style="color:#ff6900">Substitua os valores com as configurações adequadas ao seu ambiente.</h4>
 
 
 ---
 
-## Executar a API
+## Executar a API sem dockerz
 
-### 1. Iniciar o Servidor Local
+### 1. Ajuste as variavels de ambiente
+
+revisar as credenciais do banco local
+
+### 2. Iniciar o Servidor Local
 Execute o seguinte comando no terminal:
 ```bash
-$ uvicorn app.main:app --reload
+$ uvicorn app.main:app --reload --reload-dir=app
 ```
 
-### 2. Acessar a Documentação
+### 3. Acessar a Documentação
 <h3 style="color:#ff6900">Acesse a documentação interativa da API no navegador:</h3>
 
-- **Swagger UI**: [http://localhost:8000/docs](http://127.0.0.1:8000/docs)
+Ajuste para a porta corrreta
 
+`Localmente (uvicorn):` 8000
+- **Swagger UI**: [http://localhost:8000/docs](http://127.0.0.1:8000/docs) 
+- **Redoc**: [http://localhost:8000/redoc](http://127.0.0.1:8000/redoc)  
 
-- **Redoc**: [http://localhost:8000/redoc](http://127.0.0.1:8000/redoc)
+`Via Docker:` 9000
+- **Swagger UI**: [http://localhost:9000/docs](http://127.0.0.1:9000/docs) 
+- **Redoc**: [http://localhost:9000/redoc](http://127.0.0.1:9000/redoc)  
 
 
 ---

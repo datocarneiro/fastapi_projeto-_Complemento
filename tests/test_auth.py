@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
-from app.database import Base, engine, SessionLocal
+from app.conn_database import Base, engine, SessionLocal
 from sqlalchemy.orm import sessionmaker
 from app.auth import create_access_token
 from dotenv import load_dotenv
@@ -51,5 +51,3 @@ def test_rotea_autenticada(test_client):
     response = test_client.get("/tarefas", headers=headers)
     assert response.status_code == 200
     assert response.json() == {"message": "Não há tarefas criadas", "data": []}
-
-
