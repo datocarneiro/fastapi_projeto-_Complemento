@@ -36,7 +36,7 @@ def push_tarefa(tarefa: CriarTarefa, session_db: Session = Depends(get_db), curr
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.get("/tarefa", response_model=TarefaListResponse)
+@router.post("/tarefa_id", response_model=TarefaListResponse)
 def get_tarefa_id(tarefa_id: TarefaID, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     tarefa = get_task_id(db, tarefa_id.id)
     if not tarefa:
@@ -52,7 +52,7 @@ def update_tarefa(dados_tarefa: AtualizarTarefa, db: Session = Depends(get_db), 
     update_tarefa = update_task_id(db, tarefa, dados_tarefa)
     return TarefaListResponse(data=[update_tarefa])
 
-@router.delete("/tarefa", response_model=TarefaListResponse)
+@router.delete("/tarefa_id", response_model=TarefaListResponse)
 def delete_tarefa_id(dados_tarefa: TarefaID, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     tarefa = get_task_id(db, dados_tarefa.id)
     if not tarefa:
