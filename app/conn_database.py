@@ -11,6 +11,17 @@ from alembic.config import Config
 # Carregar variáveis de ambiente do arquivo .env
 load_dotenv()
 
+# essa função cria uma nova instância de sessão do banco de dados
+def get_db():
+    db = SessionLocal()
+    try:
+        '''A função usa yield em vez de return para gerar a sessão do banco de dados.
+        O uso de yield transforma a função em um "gerador" que permite ao FastAPI usar esta função como uma dependência. 
+        O FastAPI usará a sessão gerada (db) e a injetará em qualquer função que dependa dela.'''
+        yield db
+    finally:
+        db.close()
+
 credenciais = {
     'USUARIO': os.getenv('DB_USER'),
     'SENHA': os.getenv('DB_PASSWORD'),

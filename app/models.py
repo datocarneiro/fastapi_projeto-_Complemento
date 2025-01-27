@@ -1,9 +1,10 @@
-from sqlalchemy import Column, Integer, String, DateTime
-from sqlalchemy.orm import declarative_base, validates
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
+from sqlalchemy.orm import declarative_base, validates, relationship, Mapped
+from pydantic import BaseModel, ConfigDict, field_validator
 from typing import Optional, ClassVar
 from datetime import datetime
 from typing import List
+from app.validador_cpf import validar_cpf
 import pytz
 
 # Declarative Base para os modelos SQLAlchemy
@@ -15,6 +16,24 @@ TZ = pytz.timezone("America/Sao_Paulo")
 # Função para ajustar a data ao fuso horário
 def now_tz():
     return datetime.now(TZ)
+    
+class Usuario(Base):
+    __tablename__ = "conta_usuario"
+
+    id = Column(Integer, primary_key=True, autoincrement=True, index=True)
+    nome = Column(String(255), nullable=False, index=True)
+    cpf = Column(String(14), nullable=False)
+    password = Column(String(100), nullable=False, index=True)
+    active = Column(Boolean(), nullable=True, default=True)
+    data_criacao = Column(DateTime, default=now_tz)
+    data_atualizacao = Column(DateTime, default=now_tz, onupdate=now_tz)
+
+    tarefas: Mapped[List['Tarefa']] = relationship('Tarefa', back_populates='usuario')
+
+    @validates('cpf')
+    def validate_cpf(self, key, cpf_value):
+        # Usando a função de validação importada
+        return validar_cpf(cpf_value)  # Retorna o CPF formatado após validação
 
 class Tarefa(Base):
     __tablename__ = "tarefas"
@@ -26,6 +45,9 @@ class Tarefa(Base):
     nivel_prioridade = Column(String(50), nullable=True, index=True)
     data_criacao = Column(DateTime, default=now_tz)
     data_atualizacao = Column(DateTime, default=now_tz, onupdate=now_tz)
+
+    usuario_id = Column(Integer, ForeignKey("conta_usuario.id", name='fk_usuario'))
+    usuario = relationship('Usuario', back_populates="tarefas")
 
     # Definindo os valores válidos
     STATUS_VALIDOS = ["pendente", "em andamento", "concluída"]
@@ -45,11 +67,14 @@ class Tarefa(Base):
             raise ValueError(f"Nível de prioridade '{value}' inválido. Deve ser um dos {self.NIVEIS_VALIDOS}.")
         return value
 
+#################################################################################
+#                                   SCHEMAS TAREFAS                     
+#################################################################################
 # Modelos Pydantic para validação e serialização
 class CriarTarefa(BaseModel):
     titulo: str
+    status: str 
     descricao: Optional[str] = None
-    status: str  # Agora o 'status' é obrigatório
     nivel_prioridade: Optional[str] = None  # 'nivel_prioridade' é opcional
 
     model_config = ConfigDict(from_attributes=True)
@@ -78,6 +103,35 @@ class AtualizarTarefa(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+class TarefaID(BaseModel):
+    id: int 
+
+    model_config = ConfigDict(from_attributes=True)
+
+class TarefaSimples(BaseModel):
+    id: int
+    titulo: str
+    descricao: Optional[str]
+    status: str
+    nivel_prioridade: Optional[str]
+    data_criacao: datetime
+    data_atualizacao: datetime
+    
+    model_config = ConfigDict(from_attributes=True)
+
+class TarefaCompleta(BaseModel):
+    id: int
+    titulo: str
+    descricao: Optional[str]
+    status: str
+    nivel_prioridade: Optional[str]
+    data_criacao: datetime
+    data_atualizacao: datetime
+    usuario_id: Optional[int]
+    usuario: Optional["BaseUsuarioSimples"]
+
+    model_config = ConfigDict(from_attributes=True)
+
 class TarefaSchema(BaseModel):
     id: int
     titulo: str
@@ -86,21 +140,87 @@ class TarefaSchema(BaseModel):
     nivel_prioridade: Optional[str]
     data_criacao: datetime
     data_atualizacao: datetime
+    usuario_id: Optional[int]
+    usuario: Optional["BaseUsuarioSimples"]
+  
+    model_config = ConfigDict(from_attributes=True)
+
+class TarefaListResponse(BaseModel):
+    message: str = "Operation completed successfully"
+    data: List[TarefaCompleta] = []
 
     model_config = ConfigDict(from_attributes=True)
+
+#################################################################################
+#                                   SCHEMAS USUARIO                     
+#################################################################################
+
+class BaseUsuarioCadastro(BaseModel):
+    id: Optional[int] = None
+    nome: str
+    cpf: str
+    password: str
     
-class TarefaID(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+class BaseUsuarioSimples(BaseModel):
+    id: Optional[int] = None
+    nome: str
+    cpf: str
+    active: Optional[bool] = None
+    data_criacao: Optional[datetime] = None
+    data_atualizacao: Optional[datetime] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+class BaseUsuarioCompleto(BaseModel):
+    id: Optional[int] = None
+    nome: str
+    cpf: str
+    active: Optional[bool] = None
+    data_criacao: datetime
+    data_atualizacao: datetime
+    tarefas: List[TarefaSimples] = []
+
+    model_config = ConfigDict(from_attributes=True)
+
+class BaseUsuarioSchema(BaseModel):
+    id: Optional[int] = None
+    nome: str
+    cpf: str
+    password: Optional[str] = None
+    active: Optional[bool] = None
+    data_criacao: datetime
+    data_atualizacao: datetime
+    
+    model_config = ConfigDict(from_attributes=True)
+    
+class UsuarioListResponse(BaseModel):
+    message: str = "Operation completed successfully"
+    data: List[BaseUsuarioCompleto] = []
+
+    model_config = ConfigDict(from_attributes=True)
+
+class UsuarioID(BaseModel):
     id: int 
 
     model_config = ConfigDict(from_attributes=True)
 
-# base das resposnses
-class TarefaListResponse(BaseModel):
-    message: str = "Operation completed successfully"
-    data: List[TarefaSchema] = []
+class BaseUsuarioAuth(BaseModel):
+    cpf: str
+    password: str
 
+    model_config = ConfigDict(from_attributes=True)
 
+class UsuarioData(BaseModel):
+    nome: str
+    cpf: str
+    active: Optional[bool] = None
+    access_token: str
+    token_type: str
 
+    model_config = ConfigDict(from_attributes=True)
 
-
+class BaseUsuarioAuthResponse(BaseModel):
+    data: UsuarioData
 

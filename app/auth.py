@@ -1,66 +1,45 @@
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from app.usuario_db import read_usuario_cpf
 from datetime import datetime, timedelta
+from passlib.context import CryptContext
+from fastapi import HTTPException, Depends
+from app.conn_database import get_db
+from sqlalchemy.orm import Session
+from dotenv import load_dotenv
 import pytz
 import jwt 
-from passlib.context import CryptContext
-from fastapi import HTTPException, Depends, Request
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials, OAuth2PasswordBearer # "OAuth2PasswordBearer" é para auth 2.0
-from dotenv import load_dotenv
 import os
+
 
 load_dotenv()
 
 # Configuração de segurança
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
-ACCESS_TOKEN_EXPIRE_MINUTES = 300
+ACCESS_TOKEN_EXPIRE_MINUTES = 120
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Esquema de segurança por Bearer Token
 security = HTTPBearer()
 
-# # Esquema de segurança por AUTH 2.0
-# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth")
-
-# Usuários fictícios (substitua por um banco de dados)
-fake_users_db = {
-    "admin": {
-        "username": os.getenv("ADMIN_USERNAME"),
-        "full_name": os.getenv("ADMIN_FULL_NAME"),
-        "email": os.getenv("ADMIN_EMAIL"),
-        "hashed_password": pwd_context.hash(os.getenv("ADMIN_PASSWORD")),
-        "disabled": False,
-    },
-    "user1": {
-        "username": os.getenv("USERNAME"),
-        "full_name": os.getenv("FULL_NAME"),
-        "email": os.getenv("EMAIL"),
-        "hashed_password": pwd_context.hash(os.getenv("PASSWORD")),
-        "disabled": False,
-    },
-}
-
-
-# Função para verificar senha
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
-
-# Função para obter hash da senha
+# gerar hash da senha
 def get_password_hash(password):
     return pwd_context.hash(password)
 
-# Função para obter usuário pelo nome
-def get_user(db, username: str):
-    return db.get(username)
+# verificar senha
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
 
-# Função para autenticar o usuário
-def authenticate_user(fake_db, username: str, password: str):
-    user = get_user(fake_db, username)
+def authenticate_user(session_db, cpf: str, password: str):
+    # Busca o usuário no banco pelo CPF
+    user = read_usuario_cpf(session_db, cpf)
     if not user:
         return False
-    if not verify_password(password, user["hashed_password"]):
+    # Verifica a senha fornecida com o hash armazenado
+    if not verify_password(password, user.password):
         return False
-    return user
+    return user 
 
 # Função para criar um token JWT
 def create_access_token(data: dict, expires_delta: timedelta = None):
@@ -78,19 +57,18 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao gerar o token: {str(e)}")
     
-
 # Função para obter o usuário autenticado a partir do Bearer Token
-def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security), session_db: Session = Depends(get_db)):
     token = credentials.credentials  # Obtém o token Bearer
     try:
         # Decodificar o token JWT
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
+        cpf: str = payload.get("sub")
+        if cpf is None:
             raise HTTPException(
                 status_code=401, detail="Não foi possível validar as credenciais."
             )
-        return get_user(fake_users_db, username)
+        return read_usuario_cpf(session_db, cpf)
     except jwt.ExpiredSignatureError:
         raise HTTPException(
             status_code=401, detail="Token expirado, faça login novamente."
@@ -100,23 +78,3 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
             status_code=401, detail="Token inválido, realize a autenticação."
         )
 
-
-# # Função para obter o usuário autenticado por AUTH 2.0
-# def get_current_user(token: str = Depends(oauth2_scheme)):
-#     try:
-#         # Decodificando o token com PyJWT
-#         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-#         username: str = payload.get("sub")
-#         if username is None:
-#             raise HTTPException(
-#                 status_code=401, detail="Não foi possível validar as credenciais, realize a autenticação."
-#             )
-#         return get_user(fake_users_db, username)
-#     except jwt.ExpiredSignatureError:
-#         raise HTTPException(
-#             status_code=401, detail="Token expirado, faça login novamente."
-#         )
-#     except jwt.InvalidTokenError:
-#         raise HTTPException(
-#             status_code=401, detail="Token inválido, realize a autenticação."
-#         )
